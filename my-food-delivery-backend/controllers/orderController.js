@@ -4,8 +4,14 @@ const Customer = require('../models/Customer');
 const Dish = require('../models/Dish');
 
 const placeOrder = async (req, res) => {
+    console.log("Received order data:", req.body); // Log the incoming data
     try {
         const { customerData, items } = req.body;
+
+        // Check if customerData and items are defined
+        if (!customerData || !items) {
+            return res.status(400).json({ message: 'Invalid order data' });
+        }
 
         let customer = await Customer.findOne({ email: customerData.email });
         if (!customer) {
@@ -36,8 +42,9 @@ const placeOrder = async (req, res) => {
 
         res.status(201).json({ message: 'Order placed successfully', order });
     } catch (error) {
-        res.status(500).json({ message: 'Error placing order', error });
+        console.error("Error placing order:", error); // Log the error
+        res.status(500).json({ message: 'Error placing order', error: error.message });
     }
 };
 
-module.exports = { placeOrder };
+module.exports = {placeOrder};
