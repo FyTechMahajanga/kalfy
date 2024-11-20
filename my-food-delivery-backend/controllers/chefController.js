@@ -57,4 +57,14 @@ const loginChef = async (req, res) => {
     }
 };
 
-module.exports = { registerChef, loginChef };
+const getChefs = async (req, res) => {
+    try {
+        const chefs = await Chef.find(); // Fetch all chefs from the database
+        res.status(200).json(chefs); // Return the chefs as JSON
+    } catch (error) {
+        console.error("Error fetching chefs:", error);
+        res.status(500).json({ message: 'Error fetching chefs' });
+    }
+};
+
+module.exports = { registerChef, loginChef, getChefs };

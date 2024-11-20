@@ -7,6 +7,7 @@ const customerRoutes = require('./routes/customerRoutes');
 const dishRoutes = require('./routes/dishRoutes');
 const chefRoutes = require('./routes/chefRoutes');
 const menuRoutes = require('./routes/menuRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/dishes', dishRoutes);
 app.use('/api/chefs', chefRoutes);
 app.use('/api/menu', menuRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
