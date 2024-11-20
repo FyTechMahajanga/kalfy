@@ -12,6 +12,16 @@ const addDish = async (req, res) => {
     }
 };
 
+const getDishes = async (req, res) => {
+    try {
+        const dishes = await Dish.find();
+        res.status(200).json(dishes);
+    } catch (error) {
+        console.error("Error fetching dishes:", error);
+        res.status(500).json({ message: 'Error fetching dishes' });
+    }
+};
+
 const getDishesByChef = async (req, res) => {
     const { chefId } = req.params;
 
@@ -39,4 +49,4 @@ const publishDish = async (req, res) => {
     }
 };
 
-module.exports = { addDish, getDishesByChef, publishDish };
+module.exports = { addDish, getDishes, getDishesByChef, publishDish };
