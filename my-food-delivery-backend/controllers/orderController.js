@@ -34,6 +34,7 @@ const placeOrder = async (req, res) => {
             items,
             totalAmount,
             paymentMethod: customerData.paymentMethod,
+            deliveryAddress: customerData.address,
         });
 
         await order.save();

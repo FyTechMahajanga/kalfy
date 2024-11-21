@@ -12,8 +12,8 @@ const createDish = async (req, res) => {
     }
 
     try {
-        // Create a new dish
-        const dish = new Dish({ name, price, description, imageUrl });
+        // Create a new dish with chefId
+        const dish = new Dish({ name, price, description, imageUrl, chefId });
         await dish.save();
 
         // Add the dish to the chef's menu
