@@ -15,8 +15,20 @@ const placeOrder = async (req, res) => {
 
         let customer = await Customer.findOne({ email: customerData.email });
         if (!customer) {
-            customer = new Customer(customerData);
-            await customer.save();
+            // Create a new customer if not found
+            customer = new Customer({
+                name: customerData.name,
+                phone: customerData.phone,
+                paymentMethod: customerData.paymentMethod,
+                deliveryAddress: customerData.address, // Save delivery address
+            });
+            const savedCustomer = await customer.save();
+            console.log("New customer saved:", savedCustomer); // Log the saved customer
+        } else {
+            // Update the existing customer's delivery address
+            customer.deliveryAddress = customerData.address; // Update delivery address
+            const updatedCustomer = await customer.save();
+            console.log("Existing customer updated:", updatedCustomer); // Log the updated customer
         }
 
         let totalAmount = 0;
