@@ -8,29 +8,24 @@ const placeOrder = async (req, res) => {
     try {
         const { customerData, items } = req.body;
 
-        // Check if customerData and items are defined
-        if (!customerData || !items) {
-            return res.status(400).json({ message: 'Invalid order data' });
-        }
-
-        let customer = await Customer.findOne({ email: customerData.email });
+        // Check if the customer already exists
+        let customer = await Customer.findOne({ email: customerData.email }); // Check by email
         if (!customer) {
             // Create a new customer if not found
             customer = new Customer({
                 name: customerData.name,
                 phone: customerData.phone,
+                email: customerData.email, // Include email
                 paymentMethod: customerData.paymentMethod,
-                deliveryAddress: customerData.address, // Save delivery address
+                deliveryAddress: customerData.address,
             });
-            const savedCustomer = await customer.save();
-            console.log("New customer saved:", savedCustomer); // Log the saved customer
+            await customer.save();
+            console.log("New customer saved:", customer);
         } else {
-            // Update the existing customer's delivery address
-            customer.deliveryAddress = customerData.address; // Update delivery address
-            const updatedCustomer = await customer.save();
-            console.log("Existing customer updated:", updatedCustomer); // Log the updated customer
+            console.log("Existing customer found:", customer);
         }
 
+        // Calculate total amount
         let totalAmount = 0;
         for (const item of items) {
             const dish = await Dish.findById(item.dishId);
@@ -41,8 +36,9 @@ const placeOrder = async (req, res) => {
             }
         }
 
+        // Create the order
         const order = new Order({
-            customer: customer._id,
+            customer: customer._id, // Use the existing or new customer's ID
             items,
             totalAmount,
             paymentMethod: customerData.paymentMethod,
@@ -50,14 +46,43 @@ const placeOrder = async (req, res) => {
         });
 
         await order.save();
-        customer.orders.push(order._id);
-        await customer.save();
+        customer.orders.push(order._id); // Link the order to the customer
+        await customer.save(); // Save the updated customer
 
         res.status(201).json({ message: 'Order placed successfully', order });
     } catch (error) {
-        console.error("Error placing order:", error); // Log the error
+        console.error("Error placing order:", error);
         res.status(500).json({ message: 'Error placing order', error: error.message });
     }
 };
 
-module.exports = {placeOrder};
+const getOrders = async (req, res) => {
+    try {
+        const orders = await Order.find()
+            .populate('customer') // Populate customer details
+            .populate('items.dishId') // Populate dish details
+            .exec();
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        res.status(500).json({ message: 'Error fetching orders' });
+    }
+};
+
+const deleteOrder = async (req, res) => {
+    try {
+        const orderId = req.params.id; // Get the order ID from the request parameters
+        const deletedOrder = await Order.findByIdAndDelete(orderId); // Delete the order
+
+        if (!deletedOrder) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        res.status(200).json({ message: 'Order deleted successfully' });
+    } catch (error) {
+        console.error("Error deleting order:", error);
+        res.status(500).json({ message: 'An error occurred while deleting the order' });
+    }
+};
+
+module.exports = {placeOrder, getOrders, deleteOrder};

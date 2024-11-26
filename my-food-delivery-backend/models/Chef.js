@@ -7,6 +7,6 @@ const chefSchema = new mongoose.Schema({
     phone: { type: String, required: true },
     password: { type: String, required: true },
     menu: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Dish' }],
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Chef', chefSchema);
