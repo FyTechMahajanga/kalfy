@@ -6,7 +6,7 @@ const Dish = require('../models/Dish');
 const placeOrder = async (req, res) => {
     console.log("Received order data:", req.body); // Log the incoming data
     try {
-        const { customerData, items } = req.body;
+        const { customerData, items, deliveryDate } = req.body; // Include deliveryDate
 
         // Check if the customer already exists
         let customer = await Customer.findOne({ email: customerData.email }); // Check by email
@@ -43,6 +43,7 @@ const placeOrder = async (req, res) => {
             totalAmount,
             paymentMethod: customerData.paymentMethod,
             deliveryAddress: customerData.address,
+            deliveryDate: new Date(deliveryDate), // Save the delivery date
         });
 
         await order.save();
