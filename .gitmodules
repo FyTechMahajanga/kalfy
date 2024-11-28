@@ -1,0 +1,5 @@
+[submodule "my-food-delivery-app"]
+    path = my-food-delivery-app
+    url = https://github.com/FyTechMahajanga/kalfy
+
+
